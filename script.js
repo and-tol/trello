@@ -1,5 +1,6 @@
 let noteIdCounter = 8;
 let columnIdCounter = 4;
+let draggedNote = null;
 
 // create new empty note
 document
@@ -84,4 +85,64 @@ function noteProcess(noteElement) {
   noteElement.addEventListener("blur", function(evt) {
     noteElement.removeAttribute("contenteditable");
   });
+
+  noteElement.addEventListener("dragstart", dragstart_noteHandler);
+  noteElement.addEventListener("dragend", dragend_noteHandler);
+  noteElement.addEventListener("dragenter", dragenter_noteHandler);
+  noteElement.addEventListener("dragover", dragover_noteHandler);
+  noteElement.addEventListener("dragleave", dragleave_noteHandler);
+  noteElement.addEventListener("drop", drop_noteHandler);
+}
+
+function dragstart_noteHandler(evt) {
+  draggedNote = this;
+  this.classList.add("dragged");
+  evt.stopPropagation();
+}
+
+function dragend_noteHandler(evt) {
+  draggedNote = null;
+  this.classList.remove("dragged");
+
+  document.querySelectorAll(".note").forEach(x => x.classList.remove("under"));
+}
+
+function dragenter_noteHandler(evt) {
+  if (this === draggedNote) {
+    return;
+  }
+  this.classList.add("under");
+}
+
+function dragover_noteHandler(evt) {
+  evt.preventDefault();
+
+  if (this === draggedNote) {
+    return;
+  }
+}
+
+function dragleave_noteHandler(evt) {
+  if (this === draggedNote) {
+    return;
+  }
+  this.classList.remove("under");
+}
+
+function drop_noteHandler(evt) {
+  if (this === draggedNote) {
+    return;
+  }
+  if (this.parentElement === draggedNote.parentElement) {
+    const note = Array.from(this.parentElement.querySelectorAll(".note"));
+    const indexA = note.indexOf(this);
+    const indexB = note.indexOf(draggedNote);
+    if (indexA < indexB) {
+      this.parentElement.insertBefore(draggedNote.this);
+    } else {
+      this.parentElement.insertBefore(draggedNote.this.nextElementSibling);
+    }
+  } else {
+    this.parentElement.insertBefore(draggedNote.this);
+  }
 }

@@ -1,6 +1,4 @@
-let noteIdCounter = 8;
 let columnIdCounter = 4;
-let draggedNote = null;
 
 // create new empty note
 document
@@ -39,7 +37,7 @@ document
   });
 
 // editable notes
-document.querySelectorAll(".note").forEach(noteProcess);
+document.querySelectorAll(".note").forEach(Note.process);
 
 // function for processing of column
 function columnProcess(columnElement) {
@@ -53,14 +51,14 @@ function columnProcess(columnElement) {
     const noteElement = document.createElement("div");
     noteElement.classList.add("note");
     noteElement.setAttribute("draggable", "true");
-    noteElement.setAttribute("data-note-id", `${noteIdCounter}`);
+    noteElement.setAttribute("data-note-id", `${Note.idCounter}`);
 
     // count id for the new note
-    noteIdCounter++;
+    Note.idCounter++;
 
     // add new note to column
     columnElement.querySelector("[data-notes]").append(noteElement);
-    noteProcess(noteElement);
+    Note.process(noteElement);
 
     noteElement.setAttribute("contenteditable", "true");
     noteElement.focus();
@@ -82,92 +80,8 @@ function columnProcess(columnElement) {
   });
 
   columnElement.addEventListener("drop", function(event) {
-    if (draggedNote) {
-      return columnElement.querySelector("[data-notes]").append(draggedNote);
+    if (Note.dragged) {
+      return columnElement.querySelector("[data-notes]").append(Note.dragged);
     }
   });
-}
-
-// function for processing of note
-function noteProcess(noteElement) {
-  // action for edit note
-  noteElement.addEventListener("dblclick", function(event) {
-    noteElement.setAttribute("contenteditable", "true");
-    noteElement.removeAttribute("draggable");
-    noteElement.closest(".column").removeAttribute("draggable");
-    // focus for edit note
-    noteElement.focus();
-  });
-
-  noteElement.addEventListener("blur", function(event) {
-    noteElement.removeAttribute("contenteditable");
-    noteElement.setAttribute("draggable", "true");
-    noteElement.closest(".column").setAttribute("draggable", "true");
-
-    if (!noteElement.textContent.trim().length) {
-      noteElement.remove();
-    }
-  });
-
-  noteElement.addEventListener("dragstart", dragstart_noteHandler);
-  noteElement.addEventListener("dragend", dragend_noteHandler);
-  noteElement.addEventListener("dragenter", dragenter_noteHandler);
-  noteElement.addEventListener("dragover", dragover_noteHandler);
-  noteElement.addEventListener("dragleave", dragleave_noteHandler);
-  noteElement.addEventListener("drop", drop_noteHandler);
-}
-
-function dragstart_noteHandler(event) {
-  draggedNote = this;
-  this.classList.add("dragged");
-  event.stopPropagation();
-}
-
-function dragend_noteHandler(event) {
-  draggedNote = null;
-  this.classList.remove("dragged");
-
-  document.querySelectorAll(".note").forEach(x => x.classList.remove("under"));
-}
-
-function dragenter_noteHandler(event) {
-  if (this === draggedNote) {
-    return;
-  }
-  this.classList.add("under");
-}
-
-function dragover_noteHandler(event) {
-  event.preventDefault();
-
-  if (this === draggedNote) {
-    return;
-  }
-}
-
-function dragleave_noteHandler(event) {
-  if (this === draggedNote) {
-    return;
-  }
-  this.classList.remove("under");
-}
-
-function drop_noteHandler(event) {
-  event.stopPropagation();
-
-  if (this === draggedNote) {
-    return;
-  }
-  if (this.parentElement === draggedNote.parentElement) {
-    const note = Array.from(this.parentElement.querySelectorAll(".note"));
-    const indexA = note.indexOf(this);
-    const indexB = note.indexOf(draggedNote);
-    if (indexA < indexB) {
-      this.parentElement.insertBefore(draggedNote.this);
-    } else {
-      this.parentElement.insertBefore(draggedNote.this.nextElementSibling);
-    }
-  } else {
-    this.parentElement.insertBefore(draggedNote.this);
-  }
 }

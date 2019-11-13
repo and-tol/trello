@@ -25,3 +25,32 @@ document
       columnElement.querySelector("[data-notes]").append(noteElement);
     });
   });
+
+// create new empty column
+document
+  .querySelector("[data-action-addColumn]")
+  // this is 'button' for create new column
+  .addEventListener("click", function(evt) {
+    // create new column with click
+    const columnElement = document.createElement("div");
+    columnElement.classList.add("column");
+    columnElement.setAttribute("draggable", "true");
+    columnElement.setAttribute("data-column-id", `${columnIdCounter}`);
+
+    columnElement.innerHTML = `
+    <p class="column-header" contenteditable="true">
+        В плане
+      </p>
+      <div data-notes></div>
+      <p class="column-footer">
+        <span data-action-addNote class="action">
+          + Добавить карточку
+        </span>
+      </p>
+    `;
+    // count id for the new column
+    columnIdCounter++;
+
+    // add new column
+    document.querySelector(".columns").append(columnElement);
+  });

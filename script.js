@@ -40,6 +40,7 @@ document
 // editable notes
 document.querySelectorAll(".note").forEach(noteProcess);
 
+// function for processing of column
 function columnProcess(columnElement) {
   // this is 'button' for create new note
   const spanAction_addNote = columnElement.querySelector(
@@ -72,15 +73,15 @@ function columnProcess(columnElement) {
   });
 }
 
+// function for processing of note
 function noteProcess(noteElement) {
   // action for edit note
   noteElement.addEventListener("dblclick", function(evt) {
     noteElement.setAttribute("contenteditable", "true");
     // focus for edit note
     noteElement.focus();
-
-    noteElement.addEventListener("blur", function(evt) {
-      noteElement.removeAttribute("contenteditable");
-    });
+  });
+  noteElement.addEventListener("blur", function(evt) {
+    noteElement.removeAttribute("contenteditable");
   });
 }

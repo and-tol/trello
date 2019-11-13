@@ -19,7 +19,7 @@ document
     columnElement.setAttribute("data-column-id", `${columnIdCounter}`);
 
     columnElement.innerHTML = `
-    <p class="column-header" contenteditable="true">
+    <p class="column-header">
         В плане
       </p>
       <div data-notes></div>
@@ -60,6 +60,15 @@ function columnProcess(columnElement) {
     columnElement.querySelector("[data-notes]").append(noteElement);
 
     noteProcess(noteElement);
+  });
+
+  const headerElement = columnElement.querySelector(".column-header");
+  headerElement.addEventListener("dblclick", function(evt) {
+    headerElement.setAttribute("contenteditable", "true");
+    headerElement.focus();
+  });
+  headerElement.addEventListener("blur", function(evt) {
+    headerElement.removeAttribute("contenteditable");
   });
 }
 

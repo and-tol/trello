@@ -37,6 +37,9 @@ document
     columnProcess(columnElement);
   });
 
+// editable notes
+document.querySelectorAll(".note").forEach(noteProcess);
+
 function columnProcess(columnElement) {
   // this is 'button' for create new note
   const spanAction_addNote = columnElement.querySelector(
@@ -55,5 +58,20 @@ function columnProcess(columnElement) {
 
     // add new note to column
     columnElement.querySelector("[data-notes]").append(noteElement);
+
+    noteProcess(noteElement);
+  });
+}
+
+function noteProcess(noteElement) {
+  // action for edit note
+  noteElement.addEventListener("dblclick", function(evt) {
+    noteElement.setAttribute("contenteditable", "true");
+    // focus for edit note
+    noteElement.focus();
+
+    noteElement.addEventListener("blur", function(evt) {
+      noteElement.removeAttribute("contenteditable");
+    });
   });
 }

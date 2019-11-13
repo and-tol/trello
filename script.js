@@ -12,7 +12,7 @@ document
 document
   .querySelector("[data-action-addColumn]")
   // this is 'button' for create new column
-  .addEventListener("click", function(evt) {
+  .addEventListener("click", function(event) {
     // create new column with click
     const columnElement = document.createElement("div");
     columnElement.classList.add("column");
@@ -49,7 +49,7 @@ function columnProcess(columnElement) {
   );
 
   // create new note for column with click
-  spanAction_addNote.addEventListener("click", function(evt) {
+  spanAction_addNote.addEventListener("click", function(event) {
     const noteElement = document.createElement("div");
     noteElement.classList.add("note");
     noteElement.setAttribute("draggable", "true");
@@ -60,30 +60,53 @@ function columnProcess(columnElement) {
 
     // add new note to column
     columnElement.querySelector("[data-notes]").append(noteElement);
-
     noteProcess(noteElement);
+
+    noteElement.setAttribute("contenteditable", "true");
+    noteElement.focus();
   });
 
   const headerElement = columnElement.querySelector(".column-header");
-  headerElement.addEventListener("dblclick", function(evt) {
+  headerElement.addEventListener("dblclick", function(event) {
     headerElement.setAttribute("contenteditable", "true");
     headerElement.focus();
   });
-  headerElement.addEventListener("blur", function(evt) {
+
+  headerElement.addEventListener("blur", function(event) {
     headerElement.removeAttribute("contenteditable");
+  });
+
+  // drop note on column
+  columnElement.addEventListener("dragover", function(event) {
+    event.preventDefault();
+  });
+
+  columnElement.addEventListener("drop", function(event) {
+    if (draggedNote) {
+      return columnElement.querySelector("[data-notes]").append(draggedNote);
+    }
   });
 }
 
 // function for processing of note
 function noteProcess(noteElement) {
   // action for edit note
-  noteElement.addEventListener("dblclick", function(evt) {
+  noteElement.addEventListener("dblclick", function(event) {
     noteElement.setAttribute("contenteditable", "true");
+    noteElement.removeAttribute("draggable");
+    noteElement.closest(".column").removeAttribute("draggable");
     // focus for edit note
     noteElement.focus();
   });
-  noteElement.addEventListener("blur", function(evt) {
+
+  noteElement.addEventListener("blur", function(event) {
     noteElement.removeAttribute("contenteditable");
+    noteElement.setAttribute("draggable", "true");
+    noteElement.closest(".column").setAttribute("draggable", "true");
+
+    if (!noteElement.textContent.trim().length) {
+      noteElement.remove();
+    }
   });
 
   noteElement.addEventListener("dragstart", dragstart_noteHandler);
@@ -94,42 +117,44 @@ function noteProcess(noteElement) {
   noteElement.addEventListener("drop", drop_noteHandler);
 }
 
-function dragstart_noteHandler(evt) {
+function dragstart_noteHandler(event) {
   draggedNote = this;
   this.classList.add("dragged");
-  evt.stopPropagation();
+  event.stopPropagation();
 }
 
-function dragend_noteHandler(evt) {
+function dragend_noteHandler(event) {
   draggedNote = null;
   this.classList.remove("dragged");
 
   document.querySelectorAll(".note").forEach(x => x.classList.remove("under"));
 }
 
-function dragenter_noteHandler(evt) {
+function dragenter_noteHandler(event) {
   if (this === draggedNote) {
     return;
   }
   this.classList.add("under");
 }
 
-function dragover_noteHandler(evt) {
-  evt.preventDefault();
+function dragover_noteHandler(event) {
+  event.preventDefault();
 
   if (this === draggedNote) {
     return;
   }
 }
 
-function dragleave_noteHandler(evt) {
+function dragleave_noteHandler(event) {
   if (this === draggedNote) {
     return;
   }
   this.classList.remove("under");
 }
 
-function drop_noteHandler(evt) {
+function drop_noteHandler(event) {
+  event.stopPropagation();
+
   if (this === draggedNote) {
     return;
   }

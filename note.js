@@ -20,6 +20,8 @@ const Note = {
       if (!noteElement.textContent.trim().length) {
         noteElement.remove();
       }
+
+      Application.save();
     });
 
     noteElement.addEventListener("dragstart", Note.dragstart);
@@ -31,11 +33,12 @@ const Note = {
   },
 
   // create new note
-  create(id = null) {
+  create(id = null, content = "") {
     const noteElement = document.createElement("div");
 
     noteElement.classList.add("note");
     noteElement.setAttribute("draggable", "true");
+    noteElement.textContent = content;
 
     if (id) {
       noteElement.setAttribute("data-note-id", `${id}`);
@@ -66,6 +69,8 @@ const Note = {
     document
       .querySelectorAll(".note")
       .forEach(x => x.classList.remove("under"));
+
+    Application.save();
   },
 
   dragenter(event) {

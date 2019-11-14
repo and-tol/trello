@@ -10,8 +10,10 @@ const Application = {
         items: []
       }
     };
+
     document.querySelectorAll(".column").forEach(columnElement => {
       const column = {
+        title: "",
         id: parseInt(columnElement.getAttribute("data-column-id")),
         noteIds: []
       };
@@ -21,7 +23,7 @@ const Application = {
       });
 
       object.columns.items.push(column);
-      // TODO: добавление в массив без модификации его
+      // TODO: добавление в массив без его модификации
     });
 
     document.querySelectorAll(".note").forEach(noteElement => {
@@ -43,6 +45,23 @@ const Application = {
       return;
     }
 
+    const mountPoint = document.querySelector(".columns");
+    mountPoint.innerHTML = "";
+
     const object = JSON.parse(localStorage.getItem("trello"));
+    const getNoteById = id => object.notes.items.find(note => note.id === id);
+
+    for (const column of object.columns.items) {
+      const columnElement = Column.create(column.id);
+
+      mountPoint.append(columnElement);
+
+      for (const noteId of column.noteIds) {
+        const note = getNoteById(noteId);
+        const noteElement = Note.create(note.id, note.content);
+
+        columnElement.querySelector("[data-notes]").append(noteElement);
+      }
+    }
   }
 };

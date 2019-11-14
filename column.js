@@ -1,7 +1,8 @@
 const Column = {
-  columnIdCounter: 4,
+  idCounter: 4,
   dragged: null,
   dropped: null,
+
   // function for processing of column
   process(columnElement) {
     // this is 'button' for create new note
@@ -43,6 +44,38 @@ const Column = {
     // drop note on column
     columnElement.addEventListener("drop", Column.drop);
   },
+
+  // create new column
+  create(id = null) {
+    const columnElement = document.createElement("div");
+    columnElement.classList.add("column");
+    columnElement.setAttribute("draggable", "true");
+
+    if (id) {
+      columnElement.setAttribute("data-column-id", id);
+    } else {
+      columnElement.setAttribute("data-column-id", Column.idCounter);
+      // count id for the new column
+      Column.idCounter++;
+    }
+
+    columnElement.innerHTML = `
+      <p class="column-header">
+        В плане
+      </p>
+      <div data-notes></div>
+      <p class="column-footer">
+        <span data-action-addNote class="action">
+          + Добавить карточку
+        </span>
+      </p>
+    `;
+
+    Column.process(columnElement);
+
+    return columnElement;
+  },
+
   dragstart(event) {
     Column.dragged = this;
     Column.dragged.classList.add("dragged");
@@ -62,15 +95,9 @@ const Column = {
     document
       .querySelectorAll(".note")
       .forEach(noteElement => noteElement.setAttribute("draggeble", "true"));
+
+    Application.save();
   },
-
-  // dragenter(event) {
-  //   if (!Column.dragged || Column.dragged === this) {
-  //     return;
-  //   }
-
-  //   this.classList.add("under");
-  // },
 
   dragover(event) {
     event.preventDefault();
@@ -95,18 +122,6 @@ const Column = {
 
     this.classList.add("under");
   },
-
-  // dragleave(event) {
-  //   if (!Column.dragged || Column.dragged === this) {
-  //     return;
-  //   }
-
-  //   this.classList.remove("under");
-  // },
-
-  // dragover(event) {
-  //   event.preventDefault();
-  // },
 
   drop() {
     if (Note.dragged) {

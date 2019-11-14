@@ -31,15 +31,19 @@ const Note = {
   },
 
   // create new note
-  create() {
+  create(id = null) {
     const noteElement = document.createElement("div");
 
     noteElement.classList.add("note");
     noteElement.setAttribute("draggable", "true");
-    noteElement.setAttribute("data-note-id", `${Note.idCounter}`);
 
-    // count id for the new note
-    Note.idCounter++;
+    if (id) {
+      noteElement.setAttribute("data-note-id", `${id}`);
+    } else {
+      noteElement.setAttribute("data-note-id", `${Note.idCounter}`);
+      // count id for the newgit  note
+      Note.idCounter++;
+    }
 
     Note.process(noteElement);
 

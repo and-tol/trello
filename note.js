@@ -33,6 +33,7 @@ const Note = {
   // create new note
   create() {
     const noteElement = document.createElement("div");
+
     noteElement.classList.add("note");
     noteElement.setAttribute("draggable", "true");
     noteElement.setAttribute("data-note-id", `${Note.idCounter}`);
@@ -53,6 +54,8 @@ const Note = {
   },
 
   dragend(event) {
+    event.stopPropagation();
+
     Note.dragged = null;
     this.classList.remove("dragged");
 
@@ -62,7 +65,9 @@ const Note = {
   },
 
   dragenter(event) {
-    if (this === Note.dragged) {
+    event.stopPropagation();
+
+    if (!Note.dragged || this === Note.dragged) {
       return;
     }
     this.classList.add("under");
@@ -71,22 +76,26 @@ const Note = {
   dragover(event) {
     event.preventDefault();
 
-    if (this === Note.dragged) {
+    if (!Note.dragged || this === Note.dragged) {
       return;
     }
   },
 
   dragleave(event) {
-    if (this === Note.dragged) {
+    event.stopPropagation();
+
+    if (!Note.dragged || this === Note.dragged) {
       return;
     }
     this.classList.remove("under");
+
+    event.stopPropagation();
   },
 
   drop(event) {
     event.stopPropagation();
 
-    if (this === Note.dragged) {
+    if (!Note.dragged || this === Note.dragged) {
       return;
     }
 
